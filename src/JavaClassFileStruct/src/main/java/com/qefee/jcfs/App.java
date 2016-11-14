@@ -40,13 +40,71 @@ public class App {
             short constantPollCount = dis.readShort();
             echo(String.format("constantPollCount = %d", constantPollCount));
 
-//            for (int i = 0; i < constantPollCount; i++) {
-//                byte tag = dis.readByte();
-//            }
+            // ***** 常量池计数从1开始 *****
+            for (int i = 1; i < constantPollCount; i++) {
+                byte tag = dis.readByte();
+                echo(String.format("tag = %d", tag));
 
-            byte tag = dis.readByte();
+                switch (tag) {
+                    case 1: // utf8_info
+                        short length = readLength(dis);
+                        byte[] bytes = new byte[length];
+                        dis.read(bytes);
 
-            echo(String.format("tag = %d", tag));
+                        String bytesStr = new String(bytes);
+                        echo(String.format("bytes = %s", bytesStr));
+
+                        break;
+                    case 3: // integer_info
+                        readInt(dis);
+                        break;
+                    case 4: // float_info
+                        readFloat(dis);
+                        break;
+                    case 5: // long_info
+                        readLong(dis);
+                        break;
+                    case 6: // double_info
+                        readDouble(dis);
+                        break;
+                    case 7: // class_info
+                        readShort(dis);
+                        break;
+                    case 8: // string_info
+                        readShort(dis);
+                        break;
+                    case 9: // field_ref_info
+                        readShort(dis);
+                        readShort(dis);
+                        break;
+                    case 10: // method_ref_info
+                        readShort(dis);
+                        readShort(dis);
+                        break;
+                    case 11: // interface_method_ref_info
+                        readShort(dis);
+                        readShort(dis);
+                        break;
+                    case 12: // name_and_type_info
+                        readShort(dis);
+                        readShort(dis);
+                        break;
+                    case 15: // method_handle_info
+                        readByte(dis);
+                        readShort(dis);
+                        break;
+                    case 16: // method_type_info
+                        readShort(dis);
+                        break;
+                    case 18: // invoke_dynamic_info
+                        readShort(dis);
+                        readShort(dis);
+                        break;
+                    default:
+                        echo("tag error");
+                        break;
+                }
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -55,6 +113,42 @@ public class App {
         }
 
 
+    }
+
+    private static void readByte(DataInputStream dis) throws IOException {
+        byte v = dis.readByte();
+        echo(String.format("byte = %d", v));
+    }
+
+    private static void readShort(DataInputStream dis) throws IOException {
+        short v = dis.readShort();
+        echo(String.format("short = %d", v));
+    }
+
+    private static void readDouble(DataInputStream dis) throws IOException {
+        double v = dis.readDouble();
+        echo(String.format("double = %f", v));
+    }
+
+    private static void readLong(DataInputStream dis) throws IOException {
+        long v = dis.readLong();
+        echo(String.format("long = %d", v));
+    }
+
+    private static void readFloat(DataInputStream dis) throws IOException {
+        float v = dis.readFloat();
+        echo(String.format("float = %f", v));
+    }
+
+    private static void readInt(DataInputStream dis) throws IOException {
+        int v = dis.readInt();
+        echo(String.format("int = %d", v));
+    }
+
+    private static short readLength(DataInputStream dis) throws IOException {
+        short length = dis.readShort();
+        echo(String.format("length = %d", length));
+        return length;
     }
 
     public static void echo(String msg) {
